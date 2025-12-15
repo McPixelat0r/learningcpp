@@ -18,6 +18,9 @@ private:
 public:
   BinarySearchTree(int initialValue) { root = new Node(initialValue); }
 
+  ~BinarySearchTree() { // TODO
+  }
+
   bool searchValue(int value) {
     Node *currentNode = root;
     while (currentNode) {
@@ -89,5 +92,67 @@ public:
         return;
       }
     }
+    // Cases:
+    // Case 1: Target node has 0 children (it's a leaf node)
+    // Case 2: Target node has 1 child on the right
+    // Case 3: Target node has 1 child on the left
+    // Case 4: Target node has 2 children
+
+    if (!(currentNode->left || currentNode->right)) {
+      // Check if the target node was on the left or right of parent node
+      if (parentNode->left && parentNode->left == targetNode) {
+        delete parentNode->left;
+        parentNode->left = nullptr;
+      } else if (parentNode->right && parentNode->right == targetNode) {
+        delete parentNode->right;
+        parentNode->right = nullptr;
+      }
+      return;
+    }
+    if (!(targetNode->left) != !(targetNode->right)) {
+
+      if (targetNode->right) {
+        // secondSearchParent = currentNode;
+        // currentNode = currentNode->right;
+        if (parentNode->left == targetNode) {
+          parentNode->left = targetNode->right;
+        } else if (parentNode->right == targetNode) {
+          parentNode->right = targetNode->right;
+        }
+      } else {
+        if (parentNode->left == targetNode) {
+          parentNode->left = targetNode->left;
+        } else if (parentNode->right == targetNode) {
+          parentNode->right = targetNode->left;
+        }
+      }
+      delete targetNode;
+      targetNode = nullptr;
+      return;
+    }
+    Node *secondSearchParent = targetNode;
+    currentNode = secondSearchParent->right;
+    while (currentNode->left) {
+      secondSearchParent = currentNode;
+      currentNode = currentNode->left;
+    }
+    if (parentNode->left == targetNode) {
+      parentNode->left->value = currentNode->value;
+    } else if (parentNode->right == targetNode) {
+      parentNode->right->value = currentNode->value;
+    }
+    // targetNode->value = currentNode->value;
+    if (targetNode == secondSearchParent) {
+      delete secondSearchParent->right;
+      secondSearchParent->right = nullptr;
+    } else {
+      // targetNode->right = currentNode;
+      if (currentNode->right) {
+        secondSearchParent->left = currentNode->right;
+      }
+      delete currentNode;
+      currentNode = nullptr;
+    }
+    return;
   }
 };
